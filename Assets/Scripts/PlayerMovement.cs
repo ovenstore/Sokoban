@@ -15,21 +15,24 @@ public class PlayerMovement : MonoBehaviour
     private Tilemap walls;
     private bool isMoving = false;
     private Vector2Int direction = Vector2Int.down;
+    private Block[] blocks;
 
     void Start()
     {
-        // get the grid for this scene
+        // get the grid for the current scene
         grid = FindFirstObjectByType<Grid>();
 
-        // get the wall tilemap for this scene
+        // get the wall tilemap for the current scene
         GameObject wallObject = GameObject.FindGameObjectWithTag("Walls");
         walls = wallObject.GetComponent<Tilemap>();
+
+        // get all of the blocks for the current scene
+        blocks = FindObjectsByType<Block>(FindObjectsSortMode.None);
     }
 
     public void OnMove(InputValue value)
     {
         Vector2 input = value.Get<Vector2>();
-        // Vector2Int direction = Vector2Int.zero;
 
         // cancel if we get a zero vector
         if (input == Vector2.zero) {
@@ -76,6 +79,26 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        // check if there is a block in the target cell
+        Block block = GetBlockAt(targetCell);
+
+        if (block != null)
+        {
+            Vector3Int nextCell = targetCell + new Vector3Int(direction.x, direction.y, 0);
+
+            // cancel if the next cell contains a wall or another block
+            if (walls.HasTile(nextCell) || GetBlockAt(nextCell) != null)
+            {
+                UpdateAnimator();
+                return;
+            }
+
+            // push the block one cell
+            block.MoveToCell(nextCell, moveSpeed);
+        }
+
+        // move the player forward
+
         // update the animator
         isMoving = true;
         UpdateAnimator();
@@ -103,6 +126,20 @@ public class PlayerMovement : MonoBehaviour
         // update the animator
         isMoving = false;
         UpdateAnimator();
+    }
+
+    // a function to check whether there is a block in a specified cell
+    Block GetBlockAt(Vector3Int cell)
+    {
+        foreach (Block block in blocks)
+        {
+            if (block.GetCell() == cell)
+            {
+                return block;
+            }
+        }
+
+        return null;
     }
 
     void UpdateAnimator()
