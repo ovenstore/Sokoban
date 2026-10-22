@@ -1,12 +1,14 @@
 using System.Collections;
 using UnityEngine.Tilemaps;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Block : MonoBehaviour
 {
     private Grid grid;
     private Vector3Int currentCell;
     private SpriteRenderer spriteRenderer;
+    private Light2D spotlight;
     private Tilemap goals;
     private bool isMoving;
 
@@ -27,6 +29,10 @@ public class Block : MonoBehaviour
         // get the goals tilemap for the current scene
         GameObject goalObject = GameObject.FindGameObjectWithTag("Goal");
         goals = goalObject.GetComponent<Tilemap>();
+
+        // get the spotlight
+        // spotlight = GetComponent<Light2D>();
+        spotlight = GetComponentInChildren<Light2D>();
     }
 
     public void MoveToCell(Vector3Int targetCell, float moveSpeed)  
@@ -72,10 +78,12 @@ public class Block : MonoBehaviour
         if (goals.HasTile(currentCell))
         {
             spriteRenderer.sprite = goalSprite;
+            spotlight.enabled = true;
         }
         else
         {
             spriteRenderer.sprite = normalSprite;
+            spotlight.enabled = false;
         }
     }
 
