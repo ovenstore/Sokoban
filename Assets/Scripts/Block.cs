@@ -1,11 +1,17 @@
 using System.Collections;
+using UnityEngine.Tilemaps;
 using UnityEngine;
 
 public class Block : MonoBehaviour
 {
     private Grid grid;
     private Vector3Int currentCell;
+    private SpriteRenderer spriteRenderer;
+    private Tilemap goals;
     private bool isMoving;
+
+    public Sprite normalSprite;
+    public Sprite goalSprite;
 
     void Start()
     {
@@ -14,6 +20,13 @@ public class Block : MonoBehaviour
 
         // get the current cell based on the current position
         currentCell = grid.WorldToCell(transform.position);
+
+        // get the sprite renderer
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // get the goals tilemap for the current scene
+        GameObject goalObject = GameObject.FindGameObjectWithTag("Goal");
+        goals = goalObject.GetComponent<Tilemap>();
     }
 
     public void MoveToCell(Vector3Int targetCell, float moveSpeed)  
@@ -48,7 +61,22 @@ public class Block : MonoBehaviour
         // double check that we got to the right ending position
         transform.position = targetPosition;
 
+        // check whether we are on a goal tile now
+        CheckGoal();
+
         isMoving = false;
+    }
+
+    void CheckGoal()
+    {
+        if (goals.HasTile(currentCell))
+        {
+            spriteRenderer.sprite = goalSprite;
+        }
+        else
+        {
+            spriteRenderer.sprite = normalSprite;
+        }
     }
 
     public Vector3Int GetCell()

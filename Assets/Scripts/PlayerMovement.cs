@@ -97,9 +97,7 @@ public class PlayerMovement : MonoBehaviour
             block.MoveToCell(nextCell, moveSpeed);
         }
 
-        // move the player forward
-
-        // update the animator
+        // update the animator for player movement
         isMoving = true;
         UpdateAnimator();
         
