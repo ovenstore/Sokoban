@@ -7,7 +7,6 @@ public class LevelManager : MonoBehaviour
     private string[] scenes = {"Menu", "Level-1", "Level-2", "Level-3"};
     private int currentLevel = 0;
     private bool gameCompleted = false;
-    private bool showingInstructions = false;
 
 
     void Awake()
