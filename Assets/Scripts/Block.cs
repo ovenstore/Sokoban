@@ -10,7 +10,9 @@ public class Block : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Light2D spotlight;
     private Tilemap goals;
-    private bool isMoving;
+    private LevelManager levelManager;
+    private bool isMoving = false;
+    private bool isOnGoal = false;
 
     public Sprite normalSprite;
     public Sprite goalSprite;
@@ -33,6 +35,9 @@ public class Block : MonoBehaviour
         // get the spotlight
         // spotlight = GetComponent<Light2D>();
         spotlight = GetComponentInChildren<Light2D>();
+
+        // get the level manager
+        levelManager = FindFirstObjectByType<LevelManager>();
     }
 
     public void MoveToCell(Vector3Int targetCell, float moveSpeed)  
@@ -79,16 +84,26 @@ public class Block : MonoBehaviour
         {
             spriteRenderer.sprite = goalSprite;
             spotlight.enabled = true;
+            isOnGoal = true;
+            levelManager.CheckLevelCompletion();
         }
         else
         {
             spriteRenderer.sprite = normalSprite;
             spotlight.enabled = false;
+            isOnGoal = false;
         }
     }
+
+    // public methods for other scripts to call
 
     public Vector3Int GetCell()
     {
         return currentCell;
+    }
+    
+    public bool OnGoal()
+    {
+        return isOnGoal;
     }
 }

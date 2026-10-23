@@ -13,11 +13,13 @@ public class PlayerMovement : MonoBehaviour
 
     private Grid grid;
     private Tilemap walls;
+    private LevelManager levelManager;
     private bool isMoving = false;
     private Vector2Int direction = Vector2Int.down;
     private Block[] blocks;
+    private bool canMove = false;
 
-    void Start()
+    void Awake()
     {
         // get the grid for the current scene
         grid = FindFirstObjectByType<Grid>();
@@ -28,6 +30,16 @@ public class PlayerMovement : MonoBehaviour
 
         // get all of the blocks for the current scene
         blocks = FindObjectsByType<Block>(FindObjectsSortMode.None);
+
+        // get the level manager
+        levelManager = FindFirstObjectByType<LevelManager>();
+    }
+
+    // 0.2 second delay before player can move, this prevents moves from the previous level occurring in the current level
+    IEnumerator Start()
+    {
+        yield return new WaitForSeconds(0.2f);
+        canMove = true;
     }
 
     public void OnMove(InputValue value)
@@ -66,6 +78,10 @@ public class PlayerMovement : MonoBehaviour
 
     void TryMove()
     {
+        // this is for the delay
+        if (!canMove)
+            return;
+
         // if the player is moving left, then flip the sprite
         spriteRenderer.flipX = direction.x < 0;
 
@@ -145,5 +161,11 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("isMoving", isMoving);
         animator.SetInteger("horizontalFacing", direction.x);
         animator.SetInteger("verticalFacing", direction.y);
+    }
+
+    // other player actions
+    void OnRestartLevel()
+    {
+        levelManager.RestartLevel();
     }
 }
